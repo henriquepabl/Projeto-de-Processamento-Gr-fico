@@ -1,26 +1,26 @@
 # Dependências
-node_modules/
+sinuca-3d/dnode_modules/
 
 # Build / Vite
-dist/
-*.local
+sinuca-3d/dist/
+sinuca-3d/*.local
 
 # Logs
-logs/
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+sinuca-3d/logs/
+sinuca-3d/*.log
+sinuca-3d/npm-debug.log*
+sinuca-3d/pnpm-debug.log*
+sinuca-3d/yarn-debug.log*
+sinuca-3d/yarn-error.log*
 
-# Editor
-.idea/
-.vscode/*
-!.vscode/extensions.json
+# Editor / IDE
+sinuca-3d/.idea/
+sinuca-3d/.vscode/*
+sinuca-3d/!.vscode/extensions.json
 
 # SO
-.DS_Store
-Thumbs.db
+sinuca-3d/.DS_Store
+sinuca-3d/Thumbs.db
 
 # TypeScript
-*.tsbuildinfo
+sinuca-3d/*.tsbuildinfo
