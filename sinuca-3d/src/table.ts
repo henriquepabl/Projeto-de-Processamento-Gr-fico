@@ -33,7 +33,7 @@ export function createTable(scene: Scene): Mesh<BoxGeometry, MeshStandardMateria
   mesh.position.y = -TABLE_SIZE.thickness / 2;
 
   const loader = new TextureLoader();
-  const url = new URL("../assets/mesa.jpg", import.meta.url).href;
+  const url = new URL("../assets/mesa.png", import.meta.url).href;
 
   loader.load(
     url,

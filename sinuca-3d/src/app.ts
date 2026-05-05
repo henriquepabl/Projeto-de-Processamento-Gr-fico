@@ -1,6 +1,7 @@
 import {
   ACESFilmicToneMapping,
   AmbientLight,
+  Clock,
   Color,
   DirectionalLight,
   PerspectiveCamera,
@@ -9,10 +10,14 @@ import {
   WebGLRenderer,
 } from "three";
 import { createTable } from "./table";
+import { PoolCue } from "./cue";
 
 /** cena onde tudo aparece na tela */
 const scene = new Scene();
 scene.background = new Color(0x0a0e14);
+
+/** relógio que fornece o tempo decorrido para animar a cena */
+const clock = new Clock();
 
 /** desenha o 3d no canvas, anti alias e sombra ligados */
 const renderer = new WebGLRenderer({ antialias: true });
@@ -51,11 +56,25 @@ sun.shadow.camera.top = 6;
 sun.shadow.camera.bottom = -6;
 scene.add(sun);
 
+/** mesa de sinuca */
 createTable(scene);
+
+/** taco de sinuca */
+const cue = new PoolCue();
+cue.mesh.position.set(-1.4, 0.35, -1.15);
+cue.mesh.scale.setScalar(1.15);
+cue.mesh.rotation.set(0, Math.PI * 0.22, 0);
+
+cue.addToScene(scene);
 
 /** loop c novo frame e desenha td de novo */
 function animate(): void {
   requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  cue.setTime(t);
+  cue.update(t);
+
   renderer.render(scene, camera);
 }
 
