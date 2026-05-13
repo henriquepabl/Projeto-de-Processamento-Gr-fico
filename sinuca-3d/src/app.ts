@@ -11,6 +11,7 @@ import {
 } from "three";
 import { createTable } from "./table";
 import { PoolCue } from "./cue";
+import { BilliardBall, BALL_RADIUS } from "./ball";
 
 /** cena onde tudo aparece na tela */
 const scene = new Scene();
@@ -29,8 +30,8 @@ document.body.appendChild(renderer.domElement);
 
 /** camera de lado pra ver a mesa num angulo bom */
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(5.2, 4.1, 5.2);
-camera.lookAt(new Vector3(0, 0.2, 0));
+camera.position.set(5, 6, 6);
+camera.lookAt(new Vector3(0, 0, 0));
 
 /** se redimensionar a janela a camera e o canvas acompanham */
 window.addEventListener("resize", () => {
@@ -66,6 +67,32 @@ cue.mesh.scale.setScalar(1.15);
 cue.mesh.rotation.set(0, Math.PI * 0.22, 0);
 
 cue.addToScene(scene);
+const ballColors = [
+  0xffff00, 
+  0x0000ff, 0xff0000,
+  0x00ff00, 0x000000, 0xffa500,
+  0xeeee00, 0x800080, 0x8b0000, 0x00008b,
+  0x006400, 0xcc0000, 0xff8c00, 0x4b0082, 0x5d4037
+];
+
+const rowSpacing = BALL_RADIUS * 2 * Math.sin(Math.PI / 3); // Altura entre linhas
+const startX = 1.5; // Posição onde o triângulo começa
+let ballIndex = 0;
+
+for (let i = 0; i < 5; i++) {
+  for (let j = 0; j <= i; j++) {
+    const ball = new BilliardBall(ballColors[ballIndex]!, `Bola_${ballIndex + 1}`);
+    
+    // Cálculo do X: centra as bolas da linha atual
+    const z = (j - i / 2) * (BALL_RADIUS * 2.05); 
+    const x = startX + i * rowSpacing;
+    
+    ball.setPosition(x, BALL_RADIUS, z);
+    scene.add(ball.mesh);
+    ballIndex++;
+  }
+}
+
 
 /** loop c novo frame e desenha td de novo */
 function animate(): void {
