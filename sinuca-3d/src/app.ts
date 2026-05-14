@@ -33,10 +33,22 @@ const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight,
 camera.position.set(5, 6, 6);
 camera.lookAt(new Vector3(0, 0, 0));
 
-/** se redimensionar a janela a camera e o canvas acompanham */
+/** camera 2: visão de cima (tática) */
+const topCamera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+topCamera.position.set(0, 8, 0); // Posicionada no alto, bem no centro
+topCamera.lookAt(new Vector3(0, 0, 0)); // Olhando direto para o centro da mesa
+
+/** Variável que diz qual câmera está passando na tela agora */
+let activeCamera = camera; // Começa na câmera 1
+
+/** se redimensionar a janela as câmeras e o canvas acompanham */
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
+  
+  topCamera.aspect = window.innerWidth / window.innerHeight;
+  topCamera.updateProjectionMatrix();
+  
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
@@ -93,6 +105,28 @@ for (let i = 0; i < 5; i++) {
   }
 }
 
+/* BOLA BRANCA */
+const cueBall = new BilliardBall(0xffffff, "Bola_Branca");
+
+// Posiciona a bola no lado oposto ao triângulo
+cueBall.setPosition(-1.5, BALL_RADIUS, 0);
+
+// Adiciona a bola branca na cena para ela ser renderizada
+scene.add(cueBall.mesh);
+
+// Variável para controlar se a bola já levou a tacada
+let isMoving = false;
+
+// Escuta o teclado para acionar o movimento e trocar a câmera
+window.addEventListener("keydown", (event) => {
+  if (event.code === "Space") {
+    isMoving = true;
+  }
+  // Se apertar a tecla C, alterna entre a camera normal e a topCamera
+  if (event.code === "KeyC") {
+    activeCamera = activeCamera === camera ? topCamera : camera;
+  }
+});
 
 /** loop c novo frame e desenha td de novo */
 function animate(): void {
@@ -102,7 +136,28 @@ function animate(): void {
   cue.setTime(t);
   cue.update(t);
 
-  renderer.render(scene, camera);
+  // Se a tacada foi dada
+  if (isMoving) {
+    if (cue.mesh.position.x < -1.6) {
+      cue.mesh.position.x += 0.10; 
+    }
+
+    if (cueBall.mesh.position.x < 1.26) {
+      cueBall.mesh.position.x += 0.04; 
+      cueBall.mesh.rotation.z -= 0.15;
+
+      // 3. BÔNUS: A câmera acompanha a bola (apenas se for a câmera 1)
+      if (activeCamera === camera) {
+        camera.position.x = cueBall.mesh.position.x + 3; 
+        camera.lookAt(cueBall.mesh.position); 
+      }
+    } else {
+      isMoving = false; 
+    }
+  }
+
+  // Desenha a cena usando a câmera que estiver ativa no momento!
+  renderer.render(scene, activeCamera);
 }
 
 animate();
