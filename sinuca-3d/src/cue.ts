@@ -13,7 +13,7 @@ export class PoolCue {
   readonly mesh: Mesh<CylinderGeometry, ShaderMaterial>;
 
   constructor() {
-    const geometry = new CylinderGeometry(0.04, 0.055, 2.2, 32, 8, false);
+    const geometry = new CylinderGeometry( 0.012, 0.045, 3.4, 64, 16, false );
     geometry.rotateZ(Math.PI / 2);
 
     const material = new ShaderMaterial({
@@ -41,14 +41,6 @@ export class PoolCue {
     if (uniforms.uTime) {
       uniforms.uTime.value = t;
     }
-  }
-
-  update(t: number): void {
-    const swing = Math.sin(t * 1.6);
-    const push = Math.sin(t * 1.1);
-
-    this.mesh.rotation.z = swing * 0.12;
-    this.mesh.position.z = -1.15 + push * 0.08;
   }
 
   addToScene(scene: Scene): void {

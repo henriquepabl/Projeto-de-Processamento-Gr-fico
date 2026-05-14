@@ -33,7 +33,7 @@ export function createTable(scene: Scene): Mesh<BoxGeometry, MeshStandardMateria
   mesh.position.y = -TABLE_SIZE.thickness / 2;
 
   const loader = new TextureLoader();
-  const url = new URL("../assets/mesa.png", import.meta.url).href;
+  const url = new URL("../assets/pool-table.png", import.meta.url).href;
 
   loader.load(
     url,
@@ -41,7 +41,8 @@ export function createTable(scene: Scene): Mesh<BoxGeometry, MeshStandardMateria
       texture.colorSpace = SRGBColorSpace;
       texture.wrapS = RepeatWrapping;
       texture.wrapT = RepeatWrapping;
-      texture.repeat.set(1, 1);
+      texture.repeat.set(0.97, 0.54);
+      texture.offset.set(0.015, 0.23);
       const felt = new MeshStandardMaterial({
         map: texture,
         roughness: 0.9,

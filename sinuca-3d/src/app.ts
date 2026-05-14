@@ -28,6 +28,36 @@ renderer.shadowMap.enabled = true;
 renderer.toneMapping = ACESFilmicToneMapping;
 document.body.appendChild(renderer.domElement);
 
+const controlsOverlay = document.createElement("div");
+
+controlsOverlay.innerHTML = `
+  <div><b>Controles</b></div>
+  <div>SPACE → Tacada</div>
+  <div>C → Trocar câmera</div>
+  <div>R → Reiniciar cena</div>
+`;
+
+controlsOverlay.style.position = "fixed";
+controlsOverlay.style.top = "20px";
+controlsOverlay.style.right = "20px";
+
+controlsOverlay.style.padding = "12px 16px";
+
+controlsOverlay.style.background = "rgba(0,0,0,0.55)";
+controlsOverlay.style.backdropFilter = "blur(4px)";
+
+controlsOverlay.style.color = "white";
+controlsOverlay.style.fontFamily = "Arial";
+controlsOverlay.style.fontSize = "14px";
+controlsOverlay.style.lineHeight = "1.7";
+
+controlsOverlay.style.border = "1px solid rgba(255,255,255,0.12)";
+controlsOverlay.style.borderRadius = "12px";
+
+controlsOverlay.style.zIndex = "999";
+
+document.body.appendChild(controlsOverlay);
+
 /** camera de lado pra ver a mesa num angulo bom */
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(5, 6, 6);
@@ -74,9 +104,9 @@ createTable(scene);
 
 /** taco de sinuca */
 const cue = new PoolCue();
-cue.mesh.position.set(-1.4, 0.35, -1.15);
+cue.mesh.position.set(-3.9, BALL_RADIUS, 0);
 cue.mesh.scale.setScalar(1.15);
-cue.mesh.rotation.set(0, Math.PI * 0.22, 0);
+cue.mesh.rotation.set(0, Math.PI, 0);
 
 cue.addToScene(scene);
 const ballColors = [
@@ -116,17 +146,40 @@ scene.add(cueBall.mesh);
 
 // Variável para controlar se a bola já levou a tacada
 let isMoving = false;
+let hasMoved = false;
+
+// velocidade atual do taco
+let cueVelocity = 0;
 
 // Escuta o teclado para acionar o movimento e trocar a câmera
 window.addEventListener("keydown", (event) => {
   if (event.code === "Space") {
-    isMoving = true;
+    if (!hasMoved) {
+      hasMoved = true;
+      cueVelocity = 0.12;
+    }    
   }
   // Se apertar a tecla C, alterna entre a camera normal e a topCamera
   if (event.code === "KeyC") {
     activeCamera = activeCamera === camera ? topCamera : camera;
   }
+  // reset da cena
+  if (event.code === "KeyR") {
+    resetScene();
+  }
 });
+
+function resetScene(): void {
+  cue.mesh.position.set(-3.9, BALL_RADIUS, 0);
+  cue.mesh.scale.setScalar(1.15);
+  cue.mesh.rotation.set(0, Math.PI, 0);
+
+  cueBall.setPosition(-1.5, BALL_RADIUS, 0);
+
+  cueVelocity = 0;
+  isMoving = false;
+  hasMoved = false;
+}
 
 /** loop c novo frame e desenha td de novo */
 function animate(): void {
@@ -134,23 +187,36 @@ function animate(): void {
   const t = clock.getElapsedTime();
 
   cue.setTime(t);
-  cue.update(t);
+
+  if (cueVelocity > 0) {
+    cue.mesh.position.x += cueVelocity;
+
+    // posição da ponta do taco
+    const cueTipX = cue.mesh.position.x + 1.7;
+
+    // posição da bola branca
+    const ballX = cueBall.mesh.position.x;
+
+    // colisão
+    if (cueTipX >= ballX - BALL_RADIUS) {
+
+      // taco para
+      cueVelocity = 0;
+
+      // bola começa a andar
+      isMoving = true;
+    }
+  }
 
   // Se a tacada foi dada
   if (isMoving) {
     if (cue.mesh.position.x < -1.6) {
-      cue.mesh.position.x += 0.10; 
+      cue.mesh.position.x += 0.01;
     }
 
     if (cueBall.mesh.position.x < 1.26) {
       cueBall.mesh.position.x += 0.04; 
       cueBall.mesh.rotation.z -= 0.15;
-
-      // 3. BÔNUS: A câmera acompanha a bola (apenas se for a câmera 1)
-      if (activeCamera === camera) {
-        camera.position.x = cueBall.mesh.position.x + 3; 
-        camera.lookAt(cueBall.mesh.position); 
-      }
     } else {
       isMoving = false; 
     }
