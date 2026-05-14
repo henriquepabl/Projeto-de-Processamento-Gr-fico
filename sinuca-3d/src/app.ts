@@ -93,6 +93,14 @@ for (let i = 0; i < 5; i++) {
   }
 }
 
+/* BOLA BRANCA */
+const cueBall = new BilliardBall(0xffffff, "Bola_Branca");
+
+// Posiciona a bola no lado oposto ao triângulo
+cueBall.setPosition(-1.5, BALL_RADIUS, 0);
+
+// Adiciona a bola branca na cena para ela ser renderizada
+scene.add(cueBall.mesh);
 
 /** loop c novo frame e desenha td de novo */
 function animate(): void {
