@@ -10,7 +10,7 @@ import {
 } from "three";
 
 /** dimensão da mesa */
-export const TABLE_SIZE = { width: 4, thickness: 0.2, depth: 2 } as const;
+export const TABLE_SIZE = { width: 7, thickness: 0.2, depth: 3.5 } as const;
 
 /** cria a mesa e se n carregou a textura usa um material de fallback */
 export function createTable(scene: Scene): Mesh<BoxGeometry, MeshStandardMaterial> {
